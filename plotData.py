@@ -10,7 +10,13 @@ from matplotlib.ticker import PercentFormatter
 # Get bins for this hist
 def getBins(resps, n_q):
     vals = np.array(responses[questions[n_q]])
-    unique_vals = np.unique(vals)
+
+    # Avoid issue with null responses
+    cleaned_vals = vals[~pd.isnull(vals)]
+    #cleaned_vals = np.array(filter(lambda v: v==v, vals))
+    unique_vals = np.unique(cleaned_vals)
+    if len(vals) != len(cleaned_vals):
+        unique_vals = np.append(unique_vals, "No Response")
     return unique_vals
 
 # Simple poisson error
@@ -21,18 +27,29 @@ def getErr(arr):
     return err_arr
 
 # Get a title and split it when appropriate
-def getTitle(n_q, max_words = 10):
-    q_str = questions[n_q]
-    n_words = len(q_str.split())
+def getSplitString(s, max_words = 10):
+
+    n_words = len(s.split())
     n_breaks = int(n_words/max_words)
-    if n_breaks == 0: return q_str
+    if n_words <= max_words: return s
 
     title = ""
+    br = 0
     for br in range(n_breaks):
-        title += " ".join(q_str.split()[br*max_words:(br+1)*max_words])
+        title += " ".join(s.split()[br*max_words:(br+1)*max_words])
         title += "\n"
-    title += " ".join(q_str.split()[(br+1)*max_words:])
+    title += " ".join(s.split()[(br+1)*max_words:])
     return title
+
+def getBinLabels(bins, max_words = 5):
+    mod_bins = []
+    for b in bins:
+        if not type(b)==str:
+            mod_bins.append(b)
+        else:
+            mod_bins.append(getSplitString(b, max_words))
+    return mod_bins
+
 
 # Get a histogram and its errors for a given question and selection
 def getHistAndErr(resps, n_q, bins, sel="True", normalize="True"):
@@ -42,16 +59,22 @@ def getHistAndErr(resps, n_q, bins, sel="True", normalize="True"):
     n_tot = 0
     bin_vals = [0]*len(bins)
     for j, val in enumerate(vals):
-        i = np.where(bins == val)[0][0]
         if eval(sel):
+            comp_val = val
+            if pd.isnull(val):
+                comp_val = "No Response"
+            elif "No Response" in bins:
+                comp_val = str(val)
+            i = np.where(bins == comp_val)[0][0]
             bin_vals[i] += 1
             n_tot += 1
     bin_errs = getErr(bin_vals)
 
     if normalize:
-        for j in range(len(bin_vals)):
-                bin_vals[j] = bin_vals[j]/n_tot
-                bin_errs[j] = bin_errs[j]/n_tot
+        if n_tot > 0:
+            for j in range(len(bin_vals)):
+                    bin_vals[j] = bin_vals[j]/n_tot
+                    bin_errs[j] = bin_errs[j]/n_tot
 
     return bin_vals, bin_errs
 
@@ -65,12 +88,35 @@ def plotData(resps, n_q, sels=["True"], app="", normalize=True):
         data[sel] = {}
         data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, n_q, bins, sels[sel], normalize)
 
-    fig, axs = plt.subplots()
-    #hist = axs.errorbar(range(len(bin_vals)), bin_vals, yerr=bin_errs, label=bins, marker="o")
+    maxxlabel = 0
+    for x in bins: maxxlabel = max(len(str(x)), maxxlabel)
+
+    # Figure out canvas size
+    xsize = 5
+    ysize = 5
+    if maxxlabel > 30:
+        xsize = 7
+        ysize = 7
+    if len(bins)>6:
+        xsize = 9
+
+    # Make plot
+    fig, axs = plt.subplots(1, 1, figsize=(xsize,ysize))
     for sel in sels:
         axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label=sel, marker="o")
-    plt.xticks(range(len(bins)), bins)
-    axs.set_title(getTitle(n_q), fontsize=10)
+    plt.xticks(range(len(bins)), getBinLabels(bins))
+    axs.margins(0.2)
+    if len(questions[n_q].split())>30:
+        plt.subplots_adjust(top=(1-len(questions[n_q].split())*0.005))
+    if False: # maxxlabel > 15 and maxxlabel <= 30:
+        plt.xticks(rotation=10)
+        axs.set_xticklabels(getBinLabels(bins), ha='right')
+        plt.subplots_adjust(bottom=maxxlabel*0.007)
+    if maxxlabel > 15:
+        plt.xticks(rotation=60)
+        axs.set_xticklabels(getBinLabels(bins), ha='right')
+        plt.subplots_adjust(bottom=min(0.5,maxxlabel*0.05))
+    axs.set_title(getSplitString(questions[n_q]), fontsize=10)
     plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     plt.savefig("plots/q_%d%s.png"%(n_q, app))
 
@@ -80,7 +126,10 @@ def getAllSelections(respsonses, n_q):
     values = getBins(respsonses, n_q)
     selections = {}
     for v in values:
-        selections[v] = "responses[questions[%d]][j] == '%s'"%(n_q, v)
+        if type(v)==np.int64: # Value is an int
+            selections[v] = "responses[questions[%d]][j] == %s"%(n_q, v)
+        else:
+            selections[v] = "responses[questions[%d]][j] == '%s'"%(n_q, v)
     return selections
 
 resp_file = "data/Physics_Undergrad_Survey (Responses) - Form Responses 1.csv"
@@ -91,17 +140,20 @@ with open(resp_file, newline='') as csvfile:
 
     # Useful question numbers
     # 53 = race/ethnicity, 54 = gender, 58 = non-traditional students
+    # 2 = transfers, 3 = year
 
     #plotData(responses, 16, getAllSelections(responses, 54), app="_genders")
     #plotData(responses, 16, getAllSelections(responses, 58), app="_nontrad")
+    plotData(responses, 9, getAllSelections(responses, 2), app="_transfer")
     #plotData(responses, 16, getAllSelections(responses, 53), app="_race")
 
-    for x in range(100):
-        try:
-            plotData(responses, x, getAllSelections(responses, 54), app="_genders")
+    for x in range(62):
+        #plotData(responses, x, getAllSelections(responses, 3), app="_years")
+            #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
+        plotData(responses, x, getAllSelections(responses, 54), app="_genders")
             #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
             #plotData(responses, x, getAllSelections(responses, 53), app="_race")
-        except:
-            continue
+        #except:
+        #    continue
 
 
