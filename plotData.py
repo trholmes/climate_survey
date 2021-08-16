@@ -13,12 +13,14 @@ from matplotlib.ticker import PercentFormatter
 
 # Set up simplified bins
 simplified_bins = {
+    56: {"Heterosexual/Straight": ['Heterosexual/Straight'], "All Others": ['Asexual', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Prefer not to disclose', 'Queer', 'Questioning']},
     54: {"Man": ["Man"], "Woman & Other": ["Woman", "Nonbinary / Third Gender", "Prefer not to disclose"]},
     58: {"Non-Traditional": ["Yes"], "Traditional": ["No"]},
     11: {'Did not participate in research':['Did not participate in research'],
         'Combination paid/unpaid':['Research for class credit, Research for pay', 'Research for class credit, Research for pay, Research for a combination of credit and pay', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research for pay, Research to meet a scholarship/fellowship requirement', 'Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research to meet a scholarship/fellowship requirement'],
         'Unpaid only': ['Research for class credit, Research for neither credit nor pay (volunteering time)', 'Research for neither credit nor pay (volunteering time)', ],
         'Paid only': ['Research for pay', 'Research for pay, Research to meet a scholarship/fellowship requirement']},
+    53: {"Only selected White/Caucasian": ["White/Caucasian"], "Selected other group(s)": ['Asian', 'Black or African American', 'Black or African American, Hispanic', 'Hispanic', 'Pacific Islander, Asian', 'Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic', 'White/Caucasian, Native American']}
 }
 for x in [20, 21] + list(range(23,36)):
     simplified_bins[x] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
@@ -58,6 +60,10 @@ def getErr(arr):
 # Get a title and split it when appropriate
 def getSplitString(s, max_words = 9):
 
+    # Clean up super long titles
+    if s.startswith("To what extent"):
+        s = s.split('"')[1]
+
     n_words = len(s.split())
     n_breaks = int(n_words/max_words)
     if n_words <= max_words: return s
@@ -94,7 +100,7 @@ def getHistAndErr(resps, n_q, bins, sel="True", normalize=True, simplified=True)
             # Deal with null values
             if pd.isnull(val):
                 comp_val = "No Response"
-            elif "No Response" in bins and not (simplified and n_q in simplified_bins):
+            elif "No Response" in bins and not (simplified and (n_q in simplified_bins)):
                 comp_val = str(val)
 
             # Option to use simplified categories
@@ -118,24 +124,27 @@ def getHistAndErr(resps, n_q, bins, sel="True", normalize=True, simplified=True)
     return bin_vals, bin_errs
 
 # Get mean value of distribution -- only valid for 1-5 distributions
-def getMean(data):
-    vals = data[:5] # Strip off "no response"
+def getMean(data, nprofs=False):
+
+    val_index = [1, 2, 3, 4, 5]
+    if nprofs: val_index = [0, 1, 2, 3, 4, 5]
+    vals = data[:len(val_index)] # Strip off "no response"
     count = 0
     total = 0
     for i, v in enumerate(vals):
         count += v
-        total += (i+1)*v
+        total += (val_index[i])*v
     if count>0: return total/count
     return -1
 
 # Make a plot comparing response values for different selections
-def plotData(resps, n_q, sels=["True"], app="", normalize=True):
+def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True):
 
-    bins = getBins(resps, n_q)
+    bins = getBins(resps, n_q, simplified=simplified)
     data = {}
     for sel in sels:
         data[sel] = {}
-        data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, n_q, bins, sels[sel], normalize)
+        data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, n_q, bins, sels[sel], normalize, simplified=simplified)
 
     maxxlabel = 0
     for x in bins: maxxlabel = max(len(str(x)), maxxlabel)
@@ -151,15 +160,32 @@ def plotData(resps, n_q, sels=["True"], app="", normalize=True):
 
     # Make plot
     fig, axs = plt.subplots(1, 1, figsize=(xsize,ysize))
+
+    if pie:
+        if len(sels) != 1:
+            print("Cannot make pie chart for multiple selections yet.")
+            return
+        for sel in sels:
+            #axs.pie(data[sel]["bin_vals"], explode=explode, labels=getBinLabels(bins), autopct='%1.1f%%', shadow=True, startangle=90)
+            patches, texts, autotexts = axs.pie(data[sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12})
+            axs.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+            axs.margins(0.5)
+            for autotext in autotexts:
+                autotext.set_color('white')
+            axs.set_title(getSplitString(questions[n_q]), fontsize=10)
+            #plt.tight_layout()
+            plt.savefig("plots/q_%d%s_pie.png"%(n_q, app))
+        return
+
     for sel in sels:
-        if n_q in [20, 21] + list(range(23,36)) + list(range(38,52)):
-            axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label="%s (mean: %.2f)"%(sel, getMean(data[sel]["bin_vals"])), marker="o")
+        if showMean(n_q):
+            axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label="%s (mean: %.2f)"%(sel, getMean(data[sel]["bin_vals"], nprofs=(n_q in [16, 17, 18, 19]))), marker="o")
         else: axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label=sel, marker="o")
     plt.xticks(range(len(bins)), getBinLabels(bins))
     axs.margins(0.2)
     plt.ylim(bottom=0)
     if normalize: plt.ylabel("Fraction in Group")
-    else: plt.ylabel("Number of Respondants")
+    else: plt.ylabel("Number of Respondents")
     #if n_q in [20, 21] + list(range(23,36)) + list(range(38,52)):
     #    for i, sel in enumerate(sels):
     #        plt.text(0.02, 0.9-0.1*i, "%s: %.2f"%(sel, getMean(data[sel]["bin_vals"])), transform=axs.transAxes)
@@ -172,12 +198,18 @@ def plotData(resps, n_q, sels=["True"], app="", normalize=True):
     if maxxlabel > 15:
         plt.xticks(rotation=60)
         axs.set_xticklabels(getBinLabels(bins), ha='right')
-        plt.subplots_adjust(bottom=min(0.5,maxxlabel*0.05))
+        plt.subplots_adjust(bottom=min(0.4,maxxlabel*0.03))
     axs.set_title(getSplitString(questions[n_q]), fontsize=10)
     if len(sels)>1: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
+    else:
+        if showMean(n_q): plt.text(0.75, 0.85, "mean: %.2f"%(getMean(data[sel]["bin_vals"], nprofs=(n_q in [16, 17, 18, 19]))), transform = axs.transAxes)
     plt.savefig("plots/q_%d%s.png"%(n_q, app))
 
     return
+
+def showMean(n_q):
+    if n_q in [16, 17, 18, 19, 20, 21] + list(range(23,36)) + list(range(38,52)): return True
+    return False
 
 def getAllSelections(respsonses, n_q, simplified=True):
     selections = {}
@@ -205,7 +237,7 @@ questions = ['Timestamp', 'Which of these describes you?', 'Did you start your c
 with open(resp_file, newline='') as csvfile:
     responses = pd.read_csv(csvfile)
 
-    #print(getBins(responses,11))
+    #print(getBins(responses,55))
     #exit()
 
     # Useful question numbers
@@ -218,10 +250,16 @@ with open(resp_file, newline='') as csvfile:
     #plotData(responses, 16, getAllSelections(responses, 53), app="_race")
 
     for x in range(1, 62):
-        plotData(responses, x, getAllSelections(responses, 3), app="_years")
-        plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
-        plotData(responses, x, getAllSelections(responses, 54), app="_genders")
-        plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
+
+        # Just make a simple plot of everything, no weights
+        #plotData(responses, x, {"all":"True"}, app="_all", normalize=False)
+        plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=False)
+
+        #plotData(responses, x, getAllSelections(responses, 56), app="_lgbtq")
+        #plotData(responses, x, getAllSelections(responses, 3), app="_years")
+        #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
+        #plotData(responses, x, getAllSelections(responses, 54), app="_genders")
+        #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
         #plotData(responses, x, getAllSelections(responses, 53), app="_race")
         continue
 
