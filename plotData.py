@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import math
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +15,7 @@ from matplotlib.ticker import PercentFormatter
 
 # Set up simplified bins
 simplified_bins = {
+        8: {"Wants to go to physics grad school": ["Graduate school in physics or astronomy"], "Other": ['Considering multiple of the above options', 'Government Contractor - Threat Radar Engineering', 'Graduate school in an engineering discipline or computer science', 'Graduate school in another STEM field', 'Military', 'Not sure', 'Other graduate or professional school (medical, law, pharmacy, etc)', 'Other industry, not including Tech (e.g. optics, oil, etc.)', 'Teaching K-12',]},
     56: {"Heterosexual/Straight": ['Heterosexual/Straight'], "All Others": ['Asexual', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Prefer not to disclose', 'Queer', 'Questioning']},
     54: {"Man": ["Man"], "Woman & Other": ["Woman", "Nonbinary / Third Gender", "Prefer not to disclose"]},
     58: {"Non-Traditional": ["Yes"], "Traditional": ["No"]},
@@ -237,7 +240,7 @@ questions = ['Timestamp', 'Which of these describes you?', 'Did you start your c
 with open(resp_file, newline='') as csvfile:
     responses = pd.read_csv(csvfile)
 
-    #print(getBins(responses,55))
+    #print(getBins(responses,8))
     #exit()
 
     # Useful question numbers
@@ -253,12 +256,13 @@ with open(resp_file, newline='') as csvfile:
 
         # Just make a simple plot of everything, no weights
         #plotData(responses, x, {"all":"True"}, app="_all", normalize=False)
-        plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=False)
+        #plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=False)
 
         #plotData(responses, x, getAllSelections(responses, 56), app="_lgbtq")
         #plotData(responses, x, getAllSelections(responses, 3), app="_years")
         #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
         #plotData(responses, x, getAllSelections(responses, 54), app="_genders")
+        plotData(responses, x, getAllSelections(responses, 8), app="_career")
         #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
         #plotData(responses, x, getAllSelections(responses, 53), app="_race")
         continue
