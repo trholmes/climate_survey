@@ -1,0 +1,78 @@
+{
+	"grad_2023":
+        {
+            "file": "data/Physics Graduate Survey 2023.csv",
+			"gender": 76,
+			"race": 75,
+			"lgbtq": 78,
+			"us": 79,
+			"year": 2
+        },
+    "grad_2022":
+		{	
+			"file": "data/Physics Graduate Survey 2022 (Responses) - Form Responses 1.csv",
+			"gender": 72,
+			"race": 71,
+			"lgbtq": 74,
+			"us": 75,
+			"year": 2,
+			"course_prep": 9,
+			"course_req": 10,
+			"course_spec": 11, 
+			"course_coll": 12,
+			"course_qual": 15,
+			"course_part": 16,
+			"course_approach": 17,
+			"ta_train": 27,
+			"ta_guide": 28,
+			"res_topic": 36,
+			"res_recruit": 37,
+			"res_guide": 38,
+			"res_vac": 39,
+			"next_prep": 42,
+			"next_talk": 43,
+			"next_adv": 44,
+			"comm_grad": 46,
+			"comm_salary": 47,
+			"comm_dept": 48,
+			"comm_info": 49,
+			"comm_value": 50,
+			"comm_drop": 51,
+			"comm_trans": 52
+		},
+
+	"grad_2021":
+		{
+			"file": "data/Physics Graduate Survey 2021 (Responses) - Form Responses 1.csv",
+			"gender": 98,
+			"race": 97,
+			"lgbtq": 100
+		},
+	"ugrad_2023":
+        {
+            "file": "data/Physics Undergrad Survey 2023.csv"
+        },
+	"ugrad_2022":
+	{
+		"file": "data/Physics Undergrad Survey 2022 (Responses) - Form Responses 1.csv",
+		"gender": 51,
+		"race": 50,
+		"lgbtq": 53,
+		"us": 54,
+		"year": 4
+	},
+	"ugrad_2021":
+	{
+		"file": "data/Physics Undergrad Survey 2021 (Responses) - Form Responses 1.csv",
+		"gender": 62,
+		"race": 61,
+		"lgbtq": 64
+	},
+	"ugrad_2021s":
+	{
+		"file": "data/Physics_Undergrad_Survey (Responses) - Form Responses 1.csv",
+		"gender": 54,
+		"race": 53,
+		"lgbtq": 56
+	}
+}

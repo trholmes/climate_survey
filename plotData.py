@@ -6,6 +6,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import colors
 from matplotlib.ticker import PercentFormatter
+import seaborn as sns
+
+# Choose colors for pie charts
+all_colors = sns.color_palette("husl", 40)
+#all_colors = sns.color_palette("Set2")
+
+resp_files = {
+        "grad":{
+        2021: "data/Physics Graduate Survey 2021 (Responses) - Form Responses 1.csv",
+        2022: "data/Physics Graduate Survey 2022 (Responses) - Form Responses 1.csv",
+        2023: "data/Physics Graduate Survey 2023.csv",
+        },
+        "ugrad":{
+            2021: "data/Physics Graduate Survey 2021 (Responses) - Form Responses 1.csv",
+            2022: "data/Physics Graduate Survey 2022 (Responses) - Form Responses 1.csv",
+            2023: "data/Physics Undergrad Survey 2023.csv",
+        }
+}
+
+years = [2023]
+population = "grad"
+dataset = f"{population}_{years[0]}"
+output_dir = "plots/"+dataset+"/"
+
+import json
+f = open('selections.json')
+selections = json.load(f)
 
 ### HELPER FUNCTIONS ###
 
@@ -15,31 +42,65 @@ from matplotlib.ticker import PercentFormatter
 
 # Set up simplified bins
 simplified_bins = {
-        8: {"Wants to go to physics grad school": ["Graduate school in physics or astronomy"], "Other": ['Considering multiple of the above options', 'Government Contractor - Threat Radar Engineering', 'Graduate school in an engineering discipline or computer science', 'Graduate school in another STEM field', 'Military', 'Not sure', 'Other graduate or professional school (medical, law, pharmacy, etc)', 'Other industry, not including Tech (e.g. optics, oil, etc.)', 'Teaching K-12',]},
-    56: {"Heterosexual/Straight": ['Heterosexual/Straight'], "All Others": ['Asexual', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Prefer not to disclose', 'Queer', 'Questioning']},
-    54: {"Man": ["Man"], "Woman & Other": ["Woman", "Nonbinary / Third Gender", "Prefer not to disclose"]},
-    58: {"Non-Traditional": ["Yes"], "Traditional": ["No"]},
-    11: {'Did not participate in research':['Did not participate in research'],
-        'Combination paid/unpaid':['Research for class credit, Research for pay', 'Research for class credit, Research for pay, Research for a combination of credit and pay', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research for pay, Research to meet a scholarship/fellowship requirement', 'Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research to meet a scholarship/fellowship requirement'],
-        'Unpaid only': ['Research for class credit, Research for neither credit nor pay (volunteering time)', 'Research for neither credit nor pay (volunteering time)', ],
-        'Paid only': ['Research for pay', 'Research for pay, Research to meet a scholarship/fellowship requirement']},
-    53: {"Only selected White/Caucasian": ["White/Caucasian"], "Selected other group(s)": ['Asian', 'Black or African American', 'Black or African American, Hispanic', 'Hispanic', 'Pacific Islander, Asian', 'Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic', 'White/Caucasian, Native American']}
-}
-for x in [20, 21] + list(range(23,36)):
-    simplified_bins[x] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
-for x in range(38,52):
-    simplified_bins[x] = {"Never": [1], "Rarely": [2], "Occasionally": [3], "Sometimes": [4], "Most of the time": [5]}
+    # 8: {"Wants to go to physics grad school": ["Graduate school in physics or astronomy"], "Other": ['Considering multiple of the above options', 'Government Contractor - Threat Radar Engineering', 'Graduate school in an engineering discipline or computer science', 'Graduate school in another STEM field', 'Military', 'Not sure', 'Other graduate or professional school (medical, law, pharmacy, etc)', 'Other industry, not including Tech (e.g. optics, oil, etc.)', 'Teaching K-12',]},
+    #56: {"Heterosexual/Straight": ['Heterosexual/Straight'], "All Others": ['Asexual', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Prefer not to disclose', 'Queer', 'Questioning']},
+    #54: {"Man": ["Man"], "Woman & Other": ["Woman", "Nonbinary / Third Gender", "Prefer not to disclose"]},
+    #58: {"Non-Traditional": ["Yes"], "Traditional": ["No"]},
+    #11: {'Did not participate in research':['Did not participate in research'],
+        #'Combination paid/unpaid':['Research for class credit, Research for pay', 'Research for class credit, Research for pay, Research for a combination of credit and pay', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research for pay, Research to meet a scholarship/fellowship requirement', 'Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research to meet a scholarship/fellowship requirement'],
+        #'Unpaid only': ['Research for class credit, Research for neither credit nor pay (volunteering time)', 'Research for neither credit nor pay (volunteering time)', ],
+        #'Paid only': ['Research for pay', 'Research for pay, Research to meet a scholarship/fellowship requirement']},
+    #53: {"Only selected White/Caucasian": ["White/Caucasian"], "Selected other group(s)": ['Asian', 'Black or African American', 'Black or African American, Hispanic', 'Hispanic', 'Pacific Islander, Asian', 'Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic', 'White/Caucasian, Native American']}
+    #28: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
+    25: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
+    26: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
+    #29: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours'},
+    37: {"0 hours": "0 hours","1-5 hours": "1-5 hours", "6-10 hours": "6-10 hours", "11-15 hours": "11-15 hours","16-20 hours": "16-20 hours","21-30 hours": "21-30 hours","31-40 hours": "31-40 hours","41-50 hours": "41-50 hours","61+ hours": "61+ hours"},
+    selections[dataset]['gender']: {'Male': ['Male'], 'Female and Nonbinary': ['Female', 'Nonbinary / Third Gender', 'Man', 'Woman', ]},
+    selections[dataset]['race']: {'Only selected White/Caucasian': ['White/Caucasian'], 'Other': ['Hispanic, White (latino)', 'Pacific Islander, Asian', 'Black or African American, Hispanic', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic, Jewish', 'White/Caucasian, Asian', 'Asian', 'Hispanic', 'White/Caucasian, Hispanic', 'Black or African American', 'White/Caucasian, Native American', 'South Asian', ]},
+    selections[dataset]['lgbtq']: {'Only selected Heterosexual': ['Heterosexual/Straight', 'Heterosexual/Straight, never think about this question'], 'Other': ['Questioning', 'Bisexual/Pansexual, Gay', 'Lesbian', 'Non-identifying', 'Asexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Heterosexual/Straight, Asexual, Questioning', 'Bisexual/Pansexual', 'Gay', 'Straight ', 'Queer', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual, Heterosexual/Straight',]},
+    selections[dataset]["us"]: {"US Education": ["Yes"], "Non-US Education": ["No"],},
+    #selections[dataset]["year"]: {"2023": ["2023"], "2024": ["2024"], "2025": ["2025"], "2026": ["2026"]},
+    }
+#for x in [20, 21] + list(range(23,36)):
+#    simplified_bins[x] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
+#for x in range(38,52):
+#    simplified_bins[x] = {"Never": [1], "Rarely": [2], "Occasionally": [3], "Sometimes": [4], "Most of the time": [5]}
+
+def isNumeric(n_q, bin_vals):
+    numeric_vals = [1,2,3,4,5]
+    for n in numeric_vals:
+        if n in bin_vals:
+            if not "many" in questions[year][n_q]:
+                simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
+            return True
+    numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
+    for n in numeric_vals:
+        if n in bin_vals:
+            if not "many" in questions[year][n_q]:
+                simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
+            return True
+    return False
 
 # Get bins for this hist
 def getBins(resps, n_q, simplified=True):
 
-    vals = np.array(responses[questions[n_q]])
+    vals = np.array(resps.iloc[:, n_q])
 
     # Avoid issue with null responses
     cleaned_vals = vals[~pd.isnull(vals)]
     unique_vals = np.unique(cleaned_vals)
+    has_nulls = False
     if len(vals) != len(cleaned_vals):
         unique_vals = np.append(unique_vals, "No Response")
+        has_nulls = True
+
+    # If vals are numeric, use the full range
+    numeric_vals = [1,2,3,4,5]
+    if has_nulls: numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
+    is_numeric = isNumeric(n_q, unique_vals)
+    if is_numeric:
+        unique_vals = np.unique(np.append(unique_vals, numeric_vals))
 
     # Option to use hardcoded combinations
     if simplified and n_q in simplified_bins:
@@ -90,9 +151,13 @@ def getBinLabels(bins, max_words = 5):
 
 
 # Get a histogram and its errors for a given question and selection
-def getHistAndErr(resps, n_q, bins, sel="True", normalize=True, simplified=True):
+def getHistAndErr(resps, vals, n_q, bins, sel="True", normalize=True, simplified=True):
 
-    vals = np.array(responses[questions[n_q]])
+
+    # TH DEBUG
+    #print(bins, vals)
+    #print(sel)
+    #exit()
 
     n_tot = 0
     bin_vals = [0]*len(bins)
@@ -113,9 +178,12 @@ def getHistAndErr(resps, n_q, bins, sel="True", normalize=True, simplified=True)
                         comp_val = k
                         break
 
-            i = np.where(bins == comp_val)[0][0]
-            bin_vals[i] += 1
-            n_tot += 1
+            try:
+                i = np.where(bins == comp_val)[0][0]
+                bin_vals[i] += 1
+                n_tot += 1
+            except:
+                print("No entry added in question", n_q, "for value", comp_val)
     bin_errs = getErr(bin_vals)
 
     if normalize:
@@ -134,20 +202,43 @@ def getMean(data, nprofs=False):
     vals = data[:len(val_index)] # Strip off "no response"
     count = 0
     total = 0
+    dev_total = 0
     for i, v in enumerate(vals):
         count += v
         total += (val_index[i])*v
-    if count>0: return total/count
+    if count>0:
+        mean = total/count
+        for i, v in enumerate(vals):
+            dev_total += v*(val_index[i] - mean) ** 2
+        dev = math.sqrt(dev_total / count)
+        err = dev / math.sqrt(count)
+        return "%.2f ± %.2f"%(mean, err)
     return -1
 
 # Make a plot comparing response values for different selections
-def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True):
+def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True, resps2=None):
 
     bins = getBins(resps, n_q, simplified=simplified)
     data = {}
     for sel in sels:
         data[sel] = {}
-        data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, n_q, bins, sels[sel], normalize, simplified=simplified)
+        vals = np.array(resps.iloc[:, n_q])
+        data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
+
+    #resps = resps_array[0]
+
+    if resps2 is not None:
+        n_q2 = getNQ(resps, resps2, n_q)
+        data2 = {}
+        for sel in sels:
+            data2[sel] = {}
+            vals2 = np.array(resps2.iloc[:, n_q2])
+            data2[sel]["bin_vals"], data2[sel]["bin_errs"] = getHistAndErr(resps, vals2, n_q, bins, sels[sel], normalize, simplified=simplified)
+
+    # TH DEBUG
+    #print(n_q, n_q2)
+    #print(data)
+    #print(data2)
 
     maxxlabel = 0
     for x in bins: maxxlabel = max(len(str(x)), maxxlabel)
@@ -170,20 +261,32 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
             return
         for sel in sels:
             #axs.pie(data[sel]["bin_vals"], explode=explode, labels=getBinLabels(bins), autopct='%1.1f%%', shadow=True, startangle=90)
-            patches, texts, autotexts = axs.pie(data[sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12})
+            #colors = all_colors[:len(bins)]
+            colors = getColors(len(bins))
+            patches, texts, autotexts = axs.pie(data[sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12}, colors=colors)
             axs.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
             axs.margins(0.5)
             for autotext in autotexts:
                 autotext.set_color('white')
-            axs.set_title(getSplitString(questions[n_q]), fontsize=10)
+            axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
             #plt.tight_layout()
-            plt.savefig("plots/q_%d%s_pie.png"%(n_q, app))
+            plt.savefig(output_dir+"q_%d%s_pie.png"%(n_q, app))
         return
 
     for sel in sels:
-        if showMean(n_q):
-            axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label="%s (mean: %.2f)"%(sel, getMean(data[sel]["bin_vals"], nprofs=(n_q in [16, 17, 18, 19]))), marker="o")
-        else: axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label=sel, marker="o")
+        mylabel = sel
+        if showMean(bins, n_q):
+            mylabel = "%s (mean: %s)"%(sel, getMean(data[sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
+            if resps2 is not None: mylabel = mylabel.replace(sel, "2022")
+        elif resps2 is not None: mylabel = "2022"
+        axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label=mylabel, marker="o")
+
+        if resps2 is not None:
+            mylabel = mylabel.replace("2022", "2021")
+            if showMean(bins, n_q):
+                mylabel = "%s (mean: %s)"%(2021, getMean(data2[sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
+            axs.errorbar(range(len(bins)), data2[sel]["bin_vals"], yerr=data2[sel]["bin_errs"], label=mylabel, marker="o")
+
     plt.xticks(range(len(bins)), getBinLabels(bins))
     axs.margins(0.2)
     plt.ylim(bottom=0)
@@ -192,77 +295,132 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
     #if n_q in [20, 21] + list(range(23,36)) + list(range(38,52)):
     #    for i, sel in enumerate(sels):
     #        plt.text(0.02, 0.9-0.1*i, "%s: %.2f"%(sel, getMean(data[sel]["bin_vals"])), transform=axs.transAxes)
-    if len(questions[n_q].split())>30:
-        plt.subplots_adjust(top=(1-len(questions[n_q].split())*0.005))
+    if len(questions[year][n_q].split())>30:
+        plt.subplots_adjust(top=(1-len(questions[year][n_q].split())*0.005))
     if False: # maxxlabel > 15 and maxxlabel <= 30:
         plt.xticks(rotation=10)
         axs.set_xticklabels(getBinLabels(bins), ha='right')
         plt.subplots_adjust(bottom=maxxlabel*0.007)
-    if maxxlabel > 15:
+    if maxxlabel > 9:
         plt.xticks(rotation=60)
         axs.set_xticklabels(getBinLabels(bins), ha='right')
         plt.subplots_adjust(bottom=min(0.4,maxxlabel*0.03))
-    axs.set_title(getSplitString(questions[n_q]), fontsize=10)
-    if len(sels)>1: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
+    axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
+    if len(sels)>1 or resps2 is not None: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     else:
-        if showMean(n_q): plt.text(0.75, 0.85, "mean: %.2f"%(getMean(data[sel]["bin_vals"], nprofs=(n_q in [16, 17, 18, 19]))), transform = axs.transAxes)
-    plt.savefig("plots/q_%d%s.png"%(n_q, app))
+        if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(data[sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
+    plt.savefig(output_dir+"q_%d%s.png"%(n_q, app))
 
     return
 
-def showMean(n_q):
-    if n_q in [16, 17, 18, 19, 20, 21] + list(range(23,36)) + list(range(38,52)): return True
+def showMean(bins, n_q):
+    if isNumeric(n_q, bins):
+        return True
+    if "Disagree" in bins:
+        return True
+    #if n_q in [16, 17, 18, 19, 20, 21] + list(range(23,36)) + list(range(38,52)): return True
     return False
 
 def getAllSelections(respsonses, n_q, simplified=True):
     selections = {}
     if simplified and n_q in simplified_bins:
         for k in simplified_bins[n_q]:
-            selections[k] = "responses[questions[%d]][j] in simplified_bins[%d]['%s']"%(n_q, n_q, k)
+            #selections[k] = "vals[j] in simplified_bins[%d]['%s']"%(n_q, k)
+            selections[k] = "resps.iloc[:, %d][j] in simplified_bins[%d]['%s']"%(n_q, n_q, k)
         return selections
 
     values = getBins(respsonses, n_q)
     for v in values:
         if type(v)==np.int64: # Value is an int
-            selections[v] = "responses[questions[%d]][j] == %s"%(n_q, v)
+            #selections[v] = "vals[j] == %s"%(n_q, v)
+            selections[v] = "resps.iloc[:, %d][j] == %s"%(n_q, v)
         else:
-            selections[v] = "responses[questions[%d]][j] == '%s'"%(n_q, v)
+            #selections[v] = "vals[j] == '%s'"%(n_q, v)
+            selections[v] = "resps.iloc[:, %d][j] == '%s'"%(n_q, v)
     return selections
 
-#resp_file = "data/Physics_Undergrad_Survey (Responses) - Form Responses 1.csv"
-resp_file = "data/cleaned.csv"
-questions = ['Timestamp', 'Which of these describes you?', 'Did you start your college career at UT or did you transfer from elsewhere?', 'What year do you expect to graduate from UT?', 'Do you have a major or minor in another department?', 'If you answered yes to the previous question, what is your non-physics major/minor(s)?', 'How did you choose to study physics? (example: liked high school physics, physicists in the family, curiosity about the universe, anything and everything else)', 'How would you describe your participation in student organizations in the physics department?', 'What are are your plans after completing your current degree?', 'Did you know that graduate programs in physics and astronomy are typically free, and in fact pay you? (i.e. tuition is covered and students receive a stipend for research or teaching)', 'Have you participated in physics research as an undergraduate?', 'If you participated for research, which of these apply:', 'Which of these statements most applies to you?', 'Which of these funding sources have supported your research? (If none, leave blank.)', 'Have you done a professional internship that is distinct from research? ', 'Which of these activities have you participated in? (If none, leave blank.)', 'How many faculty members do you know well enough to ask them to write a letter of recommendation?', 'How many faculty members do you know well enough to ask them for academic advice?', 'How many faculty members do you know well enough to ask them for personal advice?', 'How many faculty members do you consider role models?', 'To what extent do you agree or disagree with the following statement: "I received sufficient mentoring in the physics department." (1: Strongly disagree 2: Disagree 3: Neither agree nor disagree 4: Agree 5: Strongly agree)', 'To what extent do you agree or disagree with the following statement: "My experience in the physics department adequately prepared me for my next steps after graduation." (1: Strongly disagree 2: Disagree 3: Neither agree nor disagree 4: Agree 5: Strongly agree)', 'Any other comments on the topic of research or career preparation?', 'I feel a sense of community with my classmates in the physics department. ', 'I feel a sense of community with the undergraduate physics majors as a whole. ', 'Physics instructors encourage my participation in class.', "I feel comfortable approaching my physics instructors when I don't understand a concept.", 'My physics TAs encourage my participation in class.', "I feel comfortable approaching my physics TAs when I don't understand a concept.", 'I feel supported and encouraged by physics faculty in the research I have done. (Skip if N/A)', 'I feel supported and encouraged by physics graduate students/postdocs in the research I have done. (Skip if N/A)', 'The physics department creates a supportive environment.', 'I feel like a valued member of the physics department.', 'I think about changing my major/minor away from physics.', 'I think about transferring to another institution.', 'I plan to complete my physics degree at UT.', 'If you have thought about leaving the department or university, can you describe what contributed to the desire to leave? (e.g. class load, climate, etc.)', 'Any other comments on the topic of department climate?', 'In the physics department, I personally have been treated negatively because of my race.', 'In the physics department, I personally have been treated negatively because of my gender.', 'In the physics department, I personally have been treated negatively because of my national origin.', 'In the physics department, I personally have been treated negatively because of my sexual identity.', 'In the physics department, I personally have been treated negatively because of a disability.', 'In the physics department, I have seen others treated negatively because of their race.', 'In the physics department, I have seen others treated negatively because of their gender.', 'In the physics department, I have seen others treated negatively because of their national origin.', 'In the physics department, I have seen others treated negatively because of their sexual orientation.', 'In the physics department, I have seen others treated negatively because of a disability.', 'I witness microaggressions in the physics department (to myself or others).', 'When microaggressions occur, they are acknowledged and addressed. (Leave blank if N/A)', 'I witness harassment in the physics department (to myself or others).', 'When harassment occurs, it is acknowledged and addressed. (Leave blank if N/A)', 'Any other comments about inclusion, harassment, or equity in the physics department?', 'Which groups do you belong to? (check all that apply)', 'What is your gender identity?', 'Do you identify as transgender?', 'Which best describes your sexual orientation/identity? (Select all that apply.)', 'Did you complete the majority of your K-12 education in the United States?', 'Are you a "non-traditional student" (i.e. did you have a gap of more than a year in your education career)?', 'Did any of your parents or grandparents graduate from college?', "Are there any questions you wish we'd asked? (And what would your answer to those questions be?)", "Anything else you'd like us to know?"]
+def plotSelections(resps, x, key):
+    plotData(resps, x, getAllSelections(resps, selections[dataset][key]),
+             app="_"+key)
 
-# Quickly get list of enumerated questions
-#for i, q in enumerate(questions):
-#    print(i, q)
+def getNQ(resp, resp2, n_q):
+    quest = resp.columns.values
+    quest2 = resp2.columns.values
+    key_q = quest[n_q]
+    return np.where(quest2 == key_q)[0][0]
 
-with open(resp_file, newline='') as csvfile:
-    responses = pd.read_csv(csvfile)
+def getColors(num):
+    my_palette = sns.husl_palette(n_colors=26,s=1, l=0.65)
+    selected_colors = []
+    for i in range(num):
+        selected_colors.append(my_palette[(i*9+1*((i*9)//26))%(26)])
+    return selected_colors
 
-    #print(getBins(responses,8))
-    #exit()
+# Run Options
+dump_questions = False
+dump_responses = 0
 
-    # Useful question numbers
-    # 53 = race/ethnicity, 54 = gender, 58 = non-traditional students
-    # 2 = transfers, 3 = year
+responses = {}
+questions = {}
+for year in years:
 
-    #plotData(responses, 16, getAllSelections(responses, 54), app="_genders")
-    #plotData(responses, 16, getAllSelections(responses, 58), app="_nontrad")
-    #plotData(responses, 9, getAllSelections(responses, 2), app="_transfer")
-    #plotData(responses, 16, getAllSelections(responses, 53), app="_race")
+    print(f"Working with {population}s from {year}.")
+    with open(resp_files[population][year], newline='') as csvfile:
+        resps = pd.read_csv(csvfile)
+        quests = resps.columns.values
+    responses[year] = resps
+    questions[year] = quests
 
-    for x in range(1, 62):
+    # Quickly get list of enumerated questions
+    if dump_questions:
+        for i, q in enumerate(quests):
+            print(i, q)
+        exit()
+
+    # Get list of all responses for a question
+    if dump_responses > 0:
+        ans = getBins(resps,dump_responses, False)
+        for a in ans:
+            print('"%s": "%s",'%(a, a), end = "")
+        exit()
+
+
+#plotData(responses, 16, getAllSelections(responses, 54), app="_genders")
+#plotData(responses, 16, getAllSelections(responses, 58), app="_nontrad")
+#plotData(responses, 9, getAllSelections(responses, 2), app="_transfer")
+#plotData(responses, 16, getAllSelections(responses, 53), app="_race")
+#plotData(responses, 59, {"all":"True"}, app="_all", normalize=False, simplified=True)
+#exit()
+
+
+for year in years:
+    #myrange = [2]
+    myrange = range(len(questions[year]))
+    for x in myrange:
 
         # Just make a simple plot of everything, no weights
-        #plotData(responses, x, {"all":"True"}, app="_all", normalize=False)
-        #plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=False)
+        #plotData(responses[year], x, {"all":"True"}, app="_all", normalize=False, simplified=True)
+        # Pie chart version
+        plotData(responses[year], x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
+
+        #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True, resps2=responses2)
+        #except: pass
+
+        #plotSelections(responses, x, "gender")
+        #plotSelections(responses, x, "race")
+        #plotSelections(responses, x, "lgbtq")
+        #plotSelections(responses, x, "us")
+        #plotSelections(responses, x, "year")
+
+        #plotData(responses, x, getAllSelections(responses, selections[dataset]["gender"]), app="_genders")
+        #plotData(responses, x, getAllSelections(responses, 97), app="_race")
+        #plotData(responses, x, getAllSelections(responses, 101), app="_nationality")
+        #plotData(responses, x, getAllSelections(responses, 3), app="_funding")
 
         #plotData(responses, x, getAllSelections(responses, 56), app="_lgbtq")
         #plotData(responses, x, getAllSelections(responses, 3), app="_years")
         #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
-        #plotData(responses, x, getAllSelections(responses, 54), app="_genders")
-        plotData(responses, x, getAllSelections(responses, 8), app="_career")
+        #plotData(responses, x, getAllSelections(responses, 8), app="_career")
         #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
         #plotData(responses, x, getAllSelections(responses, 53), app="_race")
         continue
