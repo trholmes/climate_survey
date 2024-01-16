@@ -25,6 +25,7 @@ resp_files = {
         }
 }
 
+#years = [2023, 2022, 2021]
 years = [2023]
 population = "grad"
 dataset = f"{population}_{years[0]}"
@@ -71,24 +72,34 @@ def isNumeric(n_q, bin_vals):
     numeric_vals = [1,2,3,4,5]
     for n in numeric_vals:
         if n in bin_vals:
-            if not "many" in questions[year][n_q]:
+            if not "many" in questions[years[0]][n_q]:
                 simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
             return True
     numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
     for n in numeric_vals:
         if n in bin_vals:
-            if not "many" in questions[year][n_q]:
+            if not "many" in questions[years[0]][n_q]:
                 simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
             return True
     return False
 
 # Get bins for this hist
-def getBins(resps, n_q, simplified=True):
+def getBins(resps, n_qs, simplified=True):
 
-    vals = np.array(resps.iloc[:, n_q])
+    n_q = n_qs[years[0]]
+    vals = []
+    for year in resps:
+        vals.extend(resps[year].iloc[:, n_qs[year]])
+    vals = np.array(vals)
+
+    #print("TH: getBins()")
+    #print(vals)
+
+    #vals = np.array(resps.iloc[:, n_q])
 
     # Avoid issue with null responses
     cleaned_vals = vals[~pd.isnull(vals)]
+    cleaned_vals = np.delete(cleaned_vals, np.where(cleaned_vals == 'nan'))
     unique_vals = np.unique(cleaned_vals)
     has_nulls = False
     if len(vals) != len(cleaned_vals):
@@ -153,12 +164,6 @@ def getBinLabels(bins, max_words = 5):
 # Get a histogram and its errors for a given question and selection
 def getHistAndErr(resps, vals, n_q, bins, sel="True", normalize=True, simplified=True):
 
-
-    # TH DEBUG
-    #print(bins, vals)
-    #print(sel)
-    #exit()
-
     n_tot = 0
     bin_vals = [0]*len(bins)
     for j, val in enumerate(vals):
@@ -216,17 +221,37 @@ def getMean(data, nprofs=False):
     return -1
 
 # Make a plot comparing response values for different selections
-def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True, resps2=None):
+def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True):
 
-    bins = getBins(resps, n_q, simplified=simplified)
+    resps = resps_array[years[0]]
+    n_qs = {2023: n_q}
+    if len(resps_array)>1:
+        for year in resps_array:
+            if year == 2023: continue
+            n_qs[year] = getNQ(resps, resps_array[year], n_q)
+            if n_qs[year]==-1: continue
+
+    #bins = getBins(resps, n_q, simplified=simplified)
+    bins = getBins(resps_array, n_qs, simplified=simplified)
     data = {}
     for sel in sels:
         data[sel] = {}
         vals = np.array(resps.iloc[:, n_q])
         data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
 
-    #resps = resps_array[0]
+    datas = {2023: data}
+    if len(resps_array)>1:
+        for year in resps_array:
+            if year == 2023: continue
+            n_qs[year] = getNQ(resps, resps_array[year], n_q)
+            if n_qs[year]==-1: continue
+            datas[year] = {}
+            for sel in sels:
+                datas[year][sel] = {}
+                vals = np.array(resps_array[year].iloc[:, n_qs[year]])
+                datas[year][sel]["bin_vals"], datas[year][sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
 
+    '''
     if resps2 is not None:
         n_q2 = getNQ(resps, resps2, n_q)
         data2 = {}
@@ -234,11 +259,12 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
             data2[sel] = {}
             vals2 = np.array(resps2.iloc[:, n_q2])
             data2[sel]["bin_vals"], data2[sel]["bin_errs"] = getHistAndErr(resps, vals2, n_q, bins, sels[sel], normalize, simplified=simplified)
+    '''
 
-    # TH DEBUG
-    #print(n_q, n_q2)
-    #print(data)
-    #print(data2)
+    #TH: Debug
+    #print(n_q)
+    #print(n_qs)
+    #print(bins)
 
     maxxlabel = 0
     for x in bins: maxxlabel = max(len(str(x)), maxxlabel)
@@ -260,19 +286,29 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
             print("Cannot make pie chart for multiple selections yet.")
             return
         for sel in sels:
-            #axs.pie(data[sel]["bin_vals"], explode=explode, labels=getBinLabels(bins), autopct='%1.1f%%', shadow=True, startangle=90)
+            #axs.pie(data[year][sel]["bin_vals"], explode=explode, labels=getBinLabels(bins), autopct='%1.1f%%', shadow=True, startangle=90)
             #colors = all_colors[:len(bins)]
             colors = getColors(len(bins))
-            patches, texts, autotexts = axs.pie(data[sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12}, colors=colors)
+            patches, texts, autotexts = axs.pie(data[year][sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12}, colors=colors)
             axs.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
             axs.margins(0.5)
             for autotext in autotexts:
                 autotext.set_color('white')
-            axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
+            axs.set_title(getSplitString(questions[years[0]][n_q]), fontsize=10)
             #plt.tight_layout()
             plt.savefig(output_dir+"q_%d%s_pie.png"%(n_q, app))
         return
 
+    for sel in sels:
+        for year in resps_array:
+            mylabel = sel
+            if showMean(bins, n_q):
+                mylabel = "%s (mean: %s)"%(sel, getMean(datas[year][sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
+                if len(resps_array)>1: mylabel = mylabel.replace(sel, str(year))
+            elif len(resps_array)>1: mylabel = str(year)
+            axs.errorbar(range(len(bins)), datas[year][sel]["bin_vals"], yerr=datas[year][sel]["bin_errs"], label=mylabel, marker="o")
+
+    '''
     for sel in sels:
         mylabel = sel
         if showMean(bins, n_q):
@@ -286,6 +322,7 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
             if showMean(bins, n_q):
                 mylabel = "%s (mean: %s)"%(2021, getMean(data2[sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
             axs.errorbar(range(len(bins)), data2[sel]["bin_vals"], yerr=data2[sel]["bin_errs"], label=mylabel, marker="o")
+    '''
 
     plt.xticks(range(len(bins)), getBinLabels(bins))
     axs.margins(0.2)
@@ -294,7 +331,7 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
     else: plt.ylabel("Number of Respondents")
     #if n_q in [20, 21] + list(range(23,36)) + list(range(38,52)):
     #    for i, sel in enumerate(sels):
-    #        plt.text(0.02, 0.9-0.1*i, "%s: %.2f"%(sel, getMean(data[sel]["bin_vals"])), transform=axs.transAxes)
+    #        plt.text(0.02, 0.9-0.1*i, "%s: %.2f"%(sel, getMean(data[year][sel]["bin_vals"])), transform=axs.transAxes)
     if len(questions[year][n_q].split())>30:
         plt.subplots_adjust(top=(1-len(questions[year][n_q].split())*0.005))
     if False: # maxxlabel > 15 and maxxlabel <= 30:
@@ -305,12 +342,12 @@ def plotData(resps, n_q, sels={"all":"True"}, app="", normalize=True, pie=False,
         plt.xticks(rotation=60)
         axs.set_xticklabels(getBinLabels(bins), ha='right')
         plt.subplots_adjust(bottom=min(0.4,maxxlabel*0.03))
-    axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
-    if len(sels)>1 or resps2 is not None: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
+    axs.set_title(getSplitString(questions[years[0]][n_q]), fontsize=10)
+    #if len(sels)>1 or resps2 is not None: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
+    if len(sels)>1 or len(resps_array)>1: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     else:
-        if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(data[sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
+        if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(data[year][sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
     plt.savefig(output_dir+"q_%d%s.png"%(n_q, app))
-
     return
 
 def showMean(bins, n_q):
@@ -394,19 +431,22 @@ for year in years:
 
 
 for year in years:
-    #myrange = [2]
+
+    #myrange = [33]
     myrange = range(len(questions[year]))
     for x in myrange:
 
         # Just make a simple plot of everything, no weights
         #plotData(responses[year], x, {"all":"True"}, app="_all", normalize=False, simplified=True)
         # Pie chart version
-        plotData(responses[year], x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
+        #plotData(responses[year], x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
 
-        #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True, resps2=responses2)
+        # Do comparisons
+        #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
         #except: pass
+        #plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
 
-        #plotSelections(responses, x, "gender")
+        plotSelections(responses, x, "gender")
         #plotSelections(responses, x, "race")
         #plotSelections(responses, x, "lgbtq")
         #plotSelections(responses, x, "us")
