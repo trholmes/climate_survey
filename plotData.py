@@ -19,15 +19,15 @@ resp_files = {
         2023: "data/Physics Graduate Survey 2023.csv",
         },
         "ugrad":{
-            2021: "data/Physics Graduate Survey 2021 (Responses) - Form Responses 1.csv",
-            2022: "data/Physics Graduate Survey 2022 (Responses) - Form Responses 1.csv",
+            2021: "data/Physics Undergrad Survey 2021 (Responses) - Form Responses 1.csv",
+            2022: "data/Physics Undergrad Survey 2022 (Responses) - Form Responses 1.csv",
             2023: "data/Physics Undergrad Survey 2023.csv",
         }
 }
 
-#years = [2023, 2022, 2021]
-years = [2023]
-population = "grad"
+years = [2023, 2022, 2021]
+#years = [2023]
+population = "ugrad"
 dataset = f"{population}_{years[0]}"
 output_dir = "plots/"+dataset+"/"
 
@@ -53,33 +53,23 @@ simplified_bins = {
         #'Paid only': ['Research for pay', 'Research for pay, Research to meet a scholarship/fellowship requirement']},
     #53: {"Only selected White/Caucasian": ["White/Caucasian"], "Selected other group(s)": ['Asian', 'Black or African American', 'Black or African American, Hispanic', 'Hispanic', 'Pacific Islander, Asian', 'Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic', 'White/Caucasian, Native American']}
     #28: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
-    25: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
-    26: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
-    #29: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours'},
-    37: {"0 hours": "0 hours","1-5 hours": "1-5 hours", "6-10 hours": "6-10 hours", "11-15 hours": "11-15 hours","16-20 hours": "16-20 hours","21-30 hours": "21-30 hours","31-40 hours": "31-40 hours","41-50 hours": "41-50 hours","61+ hours": "61+ hours"},
-    selections[dataset]['gender']: {'Male': ['Male'], 'Female and Nonbinary': ['Female', 'Nonbinary / Third Gender', 'Man', 'Woman', ]},
-    selections[dataset]['race']: {'Only selected White/Caucasian': ['White/Caucasian'], 'Other': ['Hispanic, White (latino)', 'Pacific Islander, Asian', 'Black or African American, Hispanic', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic, Jewish', 'White/Caucasian, Asian', 'Asian', 'Hispanic', 'White/Caucasian, Hispanic', 'Black or African American', 'White/Caucasian, Native American', 'South Asian', ]},
-    selections[dataset]['lgbtq']: {'Only selected Heterosexual': ['Heterosexual/Straight', 'Heterosexual/Straight, never think about this question'], 'Other': ['Questioning', 'Bisexual/Pansexual, Gay', 'Lesbian', 'Non-identifying', 'Asexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Heterosexual/Straight, Asexual, Questioning', 'Bisexual/Pansexual', 'Gay', 'Straight ', 'Queer', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual, Heterosexual/Straight',]},
+    #25: {'3-4 hours': '3-4 hours', '5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours', '26+ hours': '26+ hours'},
+    #26: {'3-4 hours': '3-4 hours', '5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours', '26+ hours': '26+ hours'},
     selections[dataset]["us"]: {"US Education": ["Yes"], "Non-US Education": ["No"],},
-    #selections[dataset]["year"]: {"2023": ["2023"], "2024": ["2024"], "2025": ["2025"], "2026": ["2026"]},
+    selections[dataset]["year"]: {"2022": [2022], "2023": [2023], "2024": [2024], "2025": [2025], "2026": [2026], "2027": [2027]},
+    #selections[dataset]["year"]: {"2023": [2023], "2022": [2022], "2021": [2021], "2020": [2020], "2019 or Earlier": [2019, 2018, 2017, 2016, 2015, 2014]},
+    selections[dataset]['gender']: {'Male': ['Male'], 'Female and Nonbinary': ['Female', 'Nonbinary / Third Gender', 'Woman', 'Man', ]},
+    selections[dataset]['race']: {'Only selected White/Caucasian': ['White/Caucasian'], 'Other': ['White/Caucasian, Hispanic', 'Pacific Islander, Asian', 'Hispanic', 'White/Caucasian;Native American', 'White/Caucasian, Native American', 'South Asian', 'Asian', 'Black or African American', 'White/Caucasian;Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic, Jewish', 'White/Caucasian;Asian', 'White/Caucasian;Hispanic', 'Black or African American, Hispanic', 'Hispanic, White (latino)', 'Arab', ]},
+    selections[dataset]['lgbtq']: {'Only selected Heterosexual': ['Heterosexual/Straight', 'Heterosexual/Straight, never think about this question', 'Straight'], 'Other': ['Asexual', 'Non-identifying', 'Bisexual/Pansexual, Heterosexual/Straight', 'Bisexual/Pansexual;Queer', 'Heterosexual/Straight, Asexual, Questioning', 'Bisexual/Pansexual, Demisexual', 'Heterosexual/Straight;Questioning', 'Bisexual/Pansexual, Gay', 'Queer', 'Heterosexual/Straight;Queer', 'Gay', 'Asexual, Prefer not to disclose', 'Lesbian', 'Straight ', 'Bisexual/Pansexual;Gay', 'Bisexual/Pansexual', 'Bisexual/Pansexual;Heterosexual/Straight', 'Bisexual/Pansexual, Queer', 'Questioning', ]},
     }
-#for x in [20, 21] + list(range(23,36)):
-#    simplified_bins[x] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
-#for x in range(38,52):
-#    simplified_bins[x] = {"Never": [1], "Rarely": [2], "Occasionally": [3], "Sometimes": [4], "Most of the time": [5]}
 
 def isNumeric(n_q, bin_vals):
-    numeric_vals = [1,2,3,4,5]
+    numeric_vals = [1,2,3,4,5,"1","2","3","4","5"]
     for n in numeric_vals:
+        #for v in bin_vals: print(v, type(v))
         if n in bin_vals:
             if not "many" in questions[years[0]][n_q]:
-                simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
-            return True
-    numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
-    for n in numeric_vals:
-        if n in bin_vals:
-            if not "many" in questions[years[0]][n_q]:
-                simplified_bins[n_q] = {"Strongly disagree": [1], "Disagree": [2], "Neither agree nor disagree": [3], "Agree": [4], "Strongly agree": [5]}
+                simplified_bins[n_q] = {"Strongly disagree": [1, "1.0"], "Disagree": [2, "2.0"], "Neither agree nor disagree": [3, "3.0"], "Agree": [4, "4.0"], "Strongly agree": [5, "5.0"]}
             return True
     return False
 
@@ -88,8 +78,8 @@ def getBins(resps, n_qs, simplified=True):
 
     n_q = n_qs[years[0]]
     vals = []
-    for year in resps:
-        vals.extend(resps[year].iloc[:, n_qs[year]])
+    for yr in resps:
+        vals.extend(resps[yr].iloc[:, n_qs[yr]])
     vals = np.array(vals)
 
     #print("TH: getBins()")
@@ -101,15 +91,21 @@ def getBins(resps, n_qs, simplified=True):
     cleaned_vals = vals[~pd.isnull(vals)]
     cleaned_vals = np.delete(cleaned_vals, np.where(cleaned_vals == 'nan'))
     unique_vals = np.unique(cleaned_vals)
-    has_nulls = False
+    #has_nulls = False
     if len(vals) != len(cleaned_vals):
         unique_vals = np.append(unique_vals, "No Response")
-        has_nulls = True
+        # Make all of the numeric values integer strings
+        if not "many" in questions[years[0]][n_q]:
+            for tmpval in ["1.0", "2.0", "3.0", "4.0", "5.0"]:
+                unique_vals[unique_vals==tmpval] = int(tmpval[0])
+        #has_nulls = True
 
     # If vals are numeric, use the full range
     numeric_vals = [1,2,3,4,5]
-    if has_nulls: numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
+    #if has_nulls: numeric_vals = ["1.0", "2.0", "3.0", "4.0", "5.0"]
+    #print("TH:", n_q, "unique_vals", unique_vals)
     is_numeric = isNumeric(n_q, unique_vals)
+    #print("TH:", n_q, "is numeric?", is_numeric)
     if is_numeric:
         unique_vals = np.unique(np.append(unique_vals, numeric_vals))
 
@@ -167,6 +163,11 @@ def getHistAndErr(resps, vals, n_q, bins, sel="True", normalize=True, simplified
     n_tot = 0
     bin_vals = [0]*len(bins)
     for j, val in enumerate(vals):
+        #print("TH:", sel)
+        #print(dataset)
+        #print(selections[dataset]['gender'])
+        #print(resps.iloc[:, selections[dataset]['gender']][j])
+        #print(eval(sel))
         if eval(sel):
             comp_val = val
 
@@ -183,12 +184,17 @@ def getHistAndErr(resps, vals, n_q, bins, sel="True", normalize=True, simplified
                         comp_val = k
                         break
 
+            #print("Current simplified_bins:", simplified_bins)
+            #print("n_q:", n_q, "comp_val:", comp_val, "bins:", bins)
             try:
                 i = np.where(bins == comp_val)[0][0]
                 bin_vals[i] += 1
                 n_tot += 1
             except:
-                print("No entry added in question", n_q, "for value", comp_val)
+                if comp_val != "Prefer not to disclose":
+                    print("No entry added in question", n_q, "for value", comp_val)
+                    print("\t Possible bins:", bins)
+                    print("\t Type of comp_val:", type(comp_val))
     bin_errs = getErr(bin_vals)
 
     if normalize:
@@ -223,13 +229,14 @@ def getMean(data, nprofs=False):
 # Make a plot comparing response values for different selections
 def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=False, simplified=True):
 
-    resps = resps_array[years[0]]
-    n_qs = {2023: n_q}
+    year = years[0]
+    resps = resps_array[year]
+    n_qs = {year: n_q}
+
     if len(resps_array)>1:
-        for year in resps_array:
-            if year == 2023: continue
-            n_qs[year] = getNQ(resps, resps_array[year], n_q)
-            if n_qs[year]==-1: continue
+        for y in resps_array:
+            if y == year: continue
+            n_qs[y] = getNQ(resps, resps_array[y], n_q)
 
     #bins = getBins(resps, n_q, simplified=simplified)
     bins = getBins(resps_array, n_qs, simplified=simplified)
@@ -239,17 +246,19 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
         vals = np.array(resps.iloc[:, n_q])
         data[sel]["bin_vals"], data[sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
 
-    datas = {2023: data}
+    datas = {year: data}
     if len(resps_array)>1:
-        for year in resps_array:
-            if year == 2023: continue
-            n_qs[year] = getNQ(resps, resps_array[year], n_q)
-            if n_qs[year]==-1: continue
-            datas[year] = {}
+        for y in resps_array:
+            if y == year: continue
+            if n_qs[y]==-1:
+                #print("TH: No question found in year", y)
+                #print("\t Question was:", questions[year][n_q])
+                continue
+            datas[y] = {}
             for sel in sels:
-                datas[year][sel] = {}
-                vals = np.array(resps_array[year].iloc[:, n_qs[year]])
-                datas[year][sel]["bin_vals"], datas[year][sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
+                datas[y][sel] = {}
+                vals = np.array(resps_array[y].iloc[:, n_qs[y]])
+                datas[y][sel]["bin_vals"], datas[y][sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
 
     '''
     if resps2 is not None:
@@ -289,24 +298,26 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
             #axs.pie(data[year][sel]["bin_vals"], explode=explode, labels=getBinLabels(bins), autopct='%1.1f%%', shadow=True, startangle=90)
             #colors = all_colors[:len(bins)]
             colors = getColors(len(bins))
-            patches, texts, autotexts = axs.pie(data[year][sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12}, colors=colors)
+            patches, texts, autotexts = axs.pie(datas[year][sel]["bin_vals"], labels=getBinLabels(bins, 2), autopct='%1.1f%%', textprops={'fontsize': 12}, colors=colors)
             axs.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
             axs.margins(0.5)
             for autotext in autotexts:
                 autotext.set_color('white')
-            axs.set_title(getSplitString(questions[years[0]][n_q]), fontsize=10)
+            axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
             #plt.tight_layout()
             plt.savefig(output_dir+"q_%d%s_pie.png"%(n_q, app))
+            plt.close()
         return
 
     for sel in sels:
-        for year in resps_array:
+        for yr in resps_array:
+            if n_qs[yr] == -1: continue
             mylabel = sel
             if showMean(bins, n_q):
-                mylabel = "%s (mean: %s)"%(sel, getMean(datas[year][sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
-                if len(resps_array)>1: mylabel = mylabel.replace(sel, str(year))
-            elif len(resps_array)>1: mylabel = str(year)
-            axs.errorbar(range(len(bins)), datas[year][sel]["bin_vals"], yerr=datas[year][sel]["bin_errs"], label=mylabel, marker="o")
+                mylabel = "%s (mean: %s)"%(sel, getMean(datas[yr][sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
+                if len(resps_array)>1: mylabel = mylabel.replace(sel, str(yr))
+            elif len(resps_array)>1: mylabel = str(yr)
+            axs.errorbar(range(len(bins)), datas[yr][sel]["bin_vals"], yerr=datas[yr][sel]["bin_errs"], label=mylabel, marker="o")
 
     '''
     for sel in sels:
@@ -342,12 +353,13 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
         plt.xticks(rotation=60)
         axs.set_xticklabels(getBinLabels(bins), ha='right')
         plt.subplots_adjust(bottom=min(0.4,maxxlabel*0.03))
-    axs.set_title(getSplitString(questions[years[0]][n_q]), fontsize=10)
+    axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
     #if len(sels)>1 or resps2 is not None: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     if len(sels)>1 or len(resps_array)>1: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     else:
-        if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(data[year][sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
+        if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(datas[year][sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
     plt.savefig(output_dir+"q_%d%s.png"%(n_q, app))
+    plt.close()
     return
 
 def showMean(bins, n_q):
@@ -358,15 +370,16 @@ def showMean(bins, n_q):
     #if n_q in [16, 17, 18, 19, 20, 21] + list(range(23,36)) + list(range(38,52)): return True
     return False
 
-def getAllSelections(respsonses, n_q, simplified=True):
+def getAllSelections(responses, n_q, simplified=True):
     selections = {}
+    n_qs = {year: n_q}
     if simplified and n_q in simplified_bins:
         for k in simplified_bins[n_q]:
             #selections[k] = "vals[j] in simplified_bins[%d]['%s']"%(n_q, k)
             selections[k] = "resps.iloc[:, %d][j] in simplified_bins[%d]['%s']"%(n_q, n_q, k)
         return selections
 
-    values = getBins(respsonses, n_q)
+    values = getBins(responses, n_qs)
     for v in values:
         if type(v)==np.int64: # Value is an int
             #selections[v] = "vals[j] == %s"%(n_q, v)
@@ -384,7 +397,8 @@ def getNQ(resp, resp2, n_q):
     quest = resp.columns.values
     quest2 = resp2.columns.values
     key_q = quest[n_q]
-    return np.where(quest2 == key_q)[0][0]
+    try: return np.where(quest2 == key_q)[0][0]
+    except: return -1
 
 def getColors(num):
     my_palette = sns.husl_palette(n_colors=26,s=1, l=0.65)
@@ -399,14 +413,14 @@ dump_responses = 0
 
 responses = {}
 questions = {}
-for year in years:
+for yr in years:
 
-    print(f"Working with {population}s from {year}.")
-    with open(resp_files[population][year], newline='') as csvfile:
+    print(f"Working with {population}s from {yr}.")
+    with open(resp_files[population][yr], newline='') as csvfile:
         resps = pd.read_csv(csvfile)
         quests = resps.columns.values
-    responses[year] = resps
-    questions[year] = quests
+    responses[yr] = resps
+    questions[yr] = quests
 
     # Quickly get list of enumerated questions
     if dump_questions:
@@ -421,7 +435,6 @@ for year in years:
             print('"%s": "%s",'%(a, a), end = "")
         exit()
 
-
 #plotData(responses, 16, getAllSelections(responses, 54), app="_genders")
 #plotData(responses, 16, getAllSelections(responses, 58), app="_nontrad")
 #plotData(responses, 9, getAllSelections(responses, 2), app="_transfer")
@@ -429,39 +442,56 @@ for year in years:
 #plotData(responses, 59, {"all":"True"}, app="_all", normalize=False, simplified=True)
 #exit()
 
+# Look at specific populations' shitty experiences over time
 
-for year in years:
+#plotData(responses, 58, {"all": "resps.iloc[:, selections[dataset]['race']][j] in simplified_bins[selections[dataset]['race']]['Other']"}, app="_comp_race", normalize=True, simplified=True)
+#plotData(responses, 63, {"all": "resps.iloc[:, selections[dataset]['race']][j] in simplified_bins[selections[dataset]['race']]['Other']"}, app="_comp_race", normalize=True, simplified=True)
+#plotData(responses, 59, {"all": "resps.iloc[:, selections[dataset]['gender']][j] in simplified_bins[selections[dataset]['gender']]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
+#plotData(responses, 64, {"all": "resps.iloc[:, selections[dataset]['gender']][j] in simplified_bins[selections[dataset]['gender']]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
+#plotData(responses, 60, {"all": "resps.iloc[:, selections[dataset]['us']][j] in simplified_bins[selections[dataset]['us']]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
+#plotData(responses, 65, {"all": "resps.iloc[:, selections[dataset]['us']][j] in simplified_bins[selections[dataset]['us']]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
+#plotData(responses, 61, {"all": "resps.iloc[:, selections[dataset]['lgbtq']][j] in simplified_bins[selections[dataset]['lgbtq']]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
+#plotData(responses, 66, {"all": "resps.iloc[:, selections[dataset]['lgbtq']][j] in simplified_bins[selections[dataset]['lgbtq']]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
 
-    #myrange = [33]
-    myrange = range(len(questions[year]))
-    for x in myrange:
+#plotData(responses, 58, {"race": "resps.iloc[:, 75][j] in simplified_bins[75]['Other']"}, app="_comp_race", normalize=True, simplified=True)
+#plotData(responses, 59, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
+#plotData(responses, 64, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
+#plotData(responses, 60, {"non-us": "resps.iloc[:, 79][j] in simplified_bins[79]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
+#plotData(responses, 65, {"non-us": "resps.iloc[:, 79][j] in simplified_bins[79]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
+#plotData(responses, 61, {"lgbtq": "resps.iloc[:, 78][j] in simplified_bins[78]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
+#plotData(responses, 66, {"lgbtq": "resps.iloc[:, 78][j] in simplified_bins[78]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
 
-        # Just make a simple plot of everything, no weights
-        #plotData(responses[year], x, {"all":"True"}, app="_all", normalize=False, simplified=True)
-        # Pie chart version
-        #plotData(responses[year], x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
 
-        # Do comparisons
-        #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
-        #except: pass
-        #plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
+#myrange = [33]
+myrange = range(len(questions[years[0]]))
+for x in myrange:
 
-        plotSelections(responses, x, "gender")
-        #plotSelections(responses, x, "race")
-        #plotSelections(responses, x, "lgbtq")
-        #plotSelections(responses, x, "us")
-        #plotSelections(responses, x, "year")
+    # Just make a simple plot of everything, no weights
+    #plotData(responses, x, {"all":"True"}, app="_all", normalize=False, simplified=True)
+    # Pie chart version
+    #plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
 
-        #plotData(responses, x, getAllSelections(responses, selections[dataset]["gender"]), app="_genders")
-        #plotData(responses, x, getAllSelections(responses, 97), app="_race")
-        #plotData(responses, x, getAllSelections(responses, 101), app="_nationality")
-        #plotData(responses, x, getAllSelections(responses, 3), app="_funding")
+    # Do comparisons
+    #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
+    #except: pass
+    plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
 
-        #plotData(responses, x, getAllSelections(responses, 56), app="_lgbtq")
-        #plotData(responses, x, getAllSelections(responses, 3), app="_years")
-        #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
-        #plotData(responses, x, getAllSelections(responses, 8), app="_career")
-        #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
-        #plotData(responses, x, getAllSelections(responses, 53), app="_race")
-        continue
+    #plotSelections(responses, x, "gender")
+    #plotSelections(responses, x, "race")
+    #plotSelections(responses, x, "lgbtq")
+    #plotSelections(responses, x, "us")
+    #plotSelections(responses, x, "year")
+
+    #plotData(responses, x, getAllSelections(responses, selections[dataset]["gender"]), app="_genders")
+    #plotData(responses, x, getAllSelections(responses, 97), app="_race")
+    #plotData(responses, x, getAllSelections(responses, 101), app="_nationality")
+    #plotData(responses, x, getAllSelections(responses, 3), app="_funding")
+
+    #plotData(responses, x, getAllSelections(responses, 56), app="_lgbtq")
+    #plotData(responses, x, getAllSelections(responses, 3), app="_years")
+    #plotData(responses, x, getAllSelections(responses, 2), app="_transfers")
+    #plotData(responses, x, getAllSelections(responses, 8), app="_career")
+    #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
+    #plotData(responses, x, getAllSelections(responses, 53), app="_race")
+    continue
 

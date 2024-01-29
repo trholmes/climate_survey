@@ -50,7 +50,12 @@
 		},
 	"ugrad_2023":
         {
-            "file": "data/Physics Undergrad Survey 2023.csv"
+            "file": "data/Physics Undergrad Survey 2023.csv",
+            "gender": 53,
+            "race": 52,
+            "lgbtq": 55,
+            "us": 56,
+            "year": 6
         },
 	"ugrad_2022":
 	{
