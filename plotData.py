@@ -43,18 +43,6 @@ selections = json.load(f)
 
 # Set up simplified bins
 simplified_bins = {
-    # 8: {"Wants to go to physics grad school": ["Graduate school in physics or astronomy"], "Other": ['Considering multiple of the above options', 'Government Contractor - Threat Radar Engineering', 'Graduate school in an engineering discipline or computer science', 'Graduate school in another STEM field', 'Military', 'Not sure', 'Other graduate or professional school (medical, law, pharmacy, etc)', 'Other industry, not including Tech (e.g. optics, oil, etc.)', 'Teaching K-12',]},
-    #56: {"Heterosexual/Straight": ['Heterosexual/Straight'], "All Others": ['Asexual', 'Asexual, Prefer not to disclose', 'Bisexual/Pansexual', 'Bisexual/Pansexual, Demisexual', 'Bisexual/Pansexual, Queer', 'Prefer not to disclose', 'Queer', 'Questioning']},
-    #54: {"Man": ["Man"], "Woman & Other": ["Woman", "Nonbinary / Third Gender", "Prefer not to disclose"]},
-    #58: {"Non-Traditional": ["Yes"], "Traditional": ["No"]},
-    #11: {'Did not participate in research':['Did not participate in research'],
-        #'Combination paid/unpaid':['Research for class credit, Research for pay', 'Research for class credit, Research for pay, Research for a combination of credit and pay', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for class credit, Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research for pay, Research to meet a scholarship/fellowship requirement', 'Research for pay, Research for neither credit nor pay (volunteering time)', 'Research for pay, Research for neither credit nor pay (volunteering time), Research to meet a scholarship/fellowship requirement', 'Research for class credit, Research to meet a scholarship/fellowship requirement'],
-        #'Unpaid only': ['Research for class credit, Research for neither credit nor pay (volunteering time)', 'Research for neither credit nor pay (volunteering time)', ],
-        #'Paid only': ['Research for pay', 'Research for pay, Research to meet a scholarship/fellowship requirement']},
-    #53: {"Only selected White/Caucasian": ["White/Caucasian"], "Selected other group(s)": ['Asian', 'Black or African American', 'Black or African American, Hispanic', 'Hispanic', 'Pacific Islander, Asian', 'Prefer not to disclose', 'White/Caucasian, Asian', 'White/Caucasian, Asian, Native American', 'White/Caucasian, Hispanic', 'White/Caucasian, Native American']}
-    #28: {'5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours'},
-    #25: {'3-4 hours': '3-4 hours', '5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours', '26+ hours': '26+ hours'},
-    #26: {'3-4 hours': '3-4 hours', '5-6 hours': '5-6 hours', '7-8 hours': '7-8 hours', '9-10 hours': '9-10 hours', '11-12 hours': '11-12 hours', '13-15 hours': '13-15 hours', '16-20 hours': '16-20 hours', '21-25 hours': '21-25 hours', '26+ hours': '26+ hours'},
     selections[dataset]["us"]: {"US Education": ["Yes"], "Non-US Education": ["No"],},
     selections[dataset]["year"]: {"2022": [2022], "2023": [2023], "2024": [2024], "2025": [2025], "2026": [2026], "2027": [2027]},
     #selections[dataset]["year"]: {"2023": [2023], "2022": [2022], "2021": [2021], "2020": [2020], "2019 or Earlier": [2019, 2018, 2017, 2016, 2015, 2014]},
@@ -435,53 +423,31 @@ for yr in years:
             print('"%s": "%s",'%(a, a), end = "")
         exit()
 
-#plotData(responses, 16, getAllSelections(responses, 54), app="_genders")
-#plotData(responses, 16, getAllSelections(responses, 58), app="_nontrad")
-#plotData(responses, 9, getAllSelections(responses, 2), app="_transfer")
-#plotData(responses, 16, getAllSelections(responses, 53), app="_race")
-#plotData(responses, 59, {"all":"True"}, app="_all", normalize=False, simplified=True)
-#exit()
 
-# Look at specific populations' shitty experiences over time
-
-#plotData(responses, 58, {"all": "resps.iloc[:, selections[dataset]['race']][j] in simplified_bins[selections[dataset]['race']]['Other']"}, app="_comp_race", normalize=True, simplified=True)
-#plotData(responses, 63, {"all": "resps.iloc[:, selections[dataset]['race']][j] in simplified_bins[selections[dataset]['race']]['Other']"}, app="_comp_race", normalize=True, simplified=True)
-#plotData(responses, 59, {"all": "resps.iloc[:, selections[dataset]['gender']][j] in simplified_bins[selections[dataset]['gender']]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
-#plotData(responses, 64, {"all": "resps.iloc[:, selections[dataset]['gender']][j] in simplified_bins[selections[dataset]['gender']]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
-#plotData(responses, 60, {"all": "resps.iloc[:, selections[dataset]['us']][j] in simplified_bins[selections[dataset]['us']]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
-#plotData(responses, 65, {"all": "resps.iloc[:, selections[dataset]['us']][j] in simplified_bins[selections[dataset]['us']]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
-#plotData(responses, 61, {"all": "resps.iloc[:, selections[dataset]['lgbtq']][j] in simplified_bins[selections[dataset]['lgbtq']]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
-#plotData(responses, 66, {"all": "resps.iloc[:, selections[dataset]['lgbtq']][j] in simplified_bins[selections[dataset]['lgbtq']]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
-
-#plotData(responses, 58, {"race": "resps.iloc[:, 75][j] in simplified_bins[75]['Other']"}, app="_comp_race", normalize=True, simplified=True)
-#plotData(responses, 59, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
-#plotData(responses, 64, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
-#plotData(responses, 60, {"non-us": "resps.iloc[:, 79][j] in simplified_bins[79]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
-#plotData(responses, 65, {"non-us": "resps.iloc[:, 79][j] in simplified_bins[79]['Non-US Education']"}, app="_comp_us", normalize=True, simplified=True)
-#plotData(responses, 61, {"lgbtq": "resps.iloc[:, 78][j] in simplified_bins[78]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
-#plotData(responses, 66, {"lgbtq": "resps.iloc[:, 78][j] in simplified_bins[78]['Other']"}, app="_comp_lgbtq", normalize=True, simplified=True)
-
-
+# Main plotting:
 #myrange = [33]
 myrange = range(len(questions[years[0]]))
 for x in myrange:
 
-    # Just make a simple plot of everything, no weights
+    # Just make a simple plot of everything, y-axis shows counts
     #plotData(responses, x, {"all":"True"}, app="_all", normalize=False, simplified=True)
-    # Pie chart version
-    #plotData(responses, x, {"all":"True"}, app="_allspec", normalize=False, pie=True, simplified=True)
+    # Pie chart version of above
+    #plotData(responses, x, {"all":"True"}, app="_allpie", normalize=False, pie=True, simplified=True)
 
-    # Do comparisons
-    #try: plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
-    #except: pass
-    plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
+    # To do comparisons by year, turn on normalization just compare distribution shapes
+    # You'll also need to put multiple years into the "years" variable
+    #plotData(responses, x, {"all":"True"}, app="_comp", normalize=True, simplified=True)
 
+    # Run these for a single year: compares responses from different populations,
+    # assuming you've already set up these keywords in selections.json
     #plotSelections(responses, x, "gender")
     #plotSelections(responses, x, "race")
     #plotSelections(responses, x, "lgbtq")
     #plotSelections(responses, x, "us")
     #plotSelections(responses, x, "year")
 
+    # You can also generate one of these on the fly with the getAllSelections function,
+    # which will work for ones that you haven't defined in selections.json
     #plotData(responses, x, getAllSelections(responses, selections[dataset]["gender"]), app="_genders")
     #plotData(responses, x, getAllSelections(responses, 97), app="_race")
     #plotData(responses, x, getAllSelections(responses, 101), app="_nationality")
@@ -494,4 +460,9 @@ for x in myrange:
     #plotData(responses, x, getAllSelections(responses, 58), app="_nontrad")
     #plotData(responses, x, getAllSelections(responses, 53), app="_race")
     continue
+
+# Look at specific populations' experiences over time
+# These are a little bit un-tested, so please validate the output if you're using it.
+#plotData(responses, 59, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
+#plotData(responses, 64, {"gender": "resps.iloc[:, 76][j] in simplified_bins[76]['Female and Nonbinary']"}, app="_comp_gender", normalize=True, simplified=True)
 
