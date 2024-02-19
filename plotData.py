@@ -37,10 +37,6 @@ selections = json.load(f)
 
 ### HELPER FUNCTIONS ###
 
-    # Useful question numbers
-    # 53 = race/ethnicity, 54 = gender, 58 = non-traditional students
-    # 2 = transfers, 3 = year
-
 # Set up simplified bins
 simplified_bins = {
     selections[dataset]["us"]: {"US Education": ["Yes"], "Non-US Education": ["No"],},
@@ -51,6 +47,8 @@ simplified_bins = {
     selections[dataset]['lgbtq']: {'Only selected Heterosexual': ['Heterosexual/Straight', 'Heterosexual/Straight, never think about this question', 'Straight'], 'Other': ['Asexual', 'Non-identifying', 'Bisexual/Pansexual, Heterosexual/Straight', 'Bisexual/Pansexual;Queer', 'Heterosexual/Straight, Asexual, Questioning', 'Bisexual/Pansexual, Demisexual', 'Heterosexual/Straight;Questioning', 'Bisexual/Pansexual, Gay', 'Queer', 'Heterosexual/Straight;Queer', 'Gay', 'Asexual, Prefer not to disclose', 'Lesbian', 'Straight ', 'Bisexual/Pansexual;Gay', 'Bisexual/Pansexual', 'Bisexual/Pansexual;Heterosexual/Straight', 'Bisexual/Pansexual, Queer', 'Questioning', ]},
     }
 
+# This function is meant to identify the questions that are agree/disagree 1-5
+# so that we can make sure all values are listed in the plot and it's in order
 def isNumeric(n_q, bin_vals):
     numeric_vals = [1,2,3,4,5,"1","2","3","4","5"]
     for n in numeric_vals:
@@ -61,7 +59,7 @@ def isNumeric(n_q, bin_vals):
             return True
     return False
 
-# Get bins for this hist
+# Get bins for this histogram
 def getBins(resps, n_qs, simplified=True):
 
     n_q = n_qs[years[0]]
@@ -116,7 +114,7 @@ def getErr(arr):
         err_arr.append(math.sqrt(entry))
     return err_arr
 
-# Get a title and split it when appropriate
+# Get a title and split it when appropriate. Maybe there is a less dumb way to do this.
 def getSplitString(s, max_words = 9):
 
     # Clean up super long titles
@@ -135,6 +133,7 @@ def getSplitString(s, max_words = 9):
     title += " ".join(s.split()[(br+1)*max_words:])
     return title
 
+# When bin labels are strings, split them as appropriate for display - mainly relevant for pie charts
 def getBinLabels(bins, max_words = 5):
     mod_bins = []
     for b in bins:
@@ -143,7 +142,6 @@ def getBinLabels(bins, max_words = 5):
         else:
             mod_bins.append(getSplitString(b, max_words))
     return mod_bins
-
 
 # Get a histogram and its errors for a given question and selection
 def getHistAndErr(resps, vals, n_q, bins, sel="True", normalize=True, simplified=True):
@@ -248,16 +246,6 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
                 vals = np.array(resps_array[y].iloc[:, n_qs[y]])
                 datas[y][sel]["bin_vals"], datas[y][sel]["bin_errs"] = getHistAndErr(resps, vals, n_q, bins, sels[sel], normalize, simplified=simplified)
 
-    '''
-    if resps2 is not None:
-        n_q2 = getNQ(resps, resps2, n_q)
-        data2 = {}
-        for sel in sels:
-            data2[sel] = {}
-            vals2 = np.array(resps2.iloc[:, n_q2])
-            data2[sel]["bin_vals"], data2[sel]["bin_errs"] = getHistAndErr(resps, vals2, n_q, bins, sels[sel], normalize, simplified=simplified)
-    '''
-
     #TH: Debug
     #print(n_q)
     #print(n_qs)
@@ -307,30 +295,11 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
             elif len(resps_array)>1: mylabel = str(yr)
             axs.errorbar(range(len(bins)), datas[yr][sel]["bin_vals"], yerr=datas[yr][sel]["bin_errs"], label=mylabel, marker="o")
 
-    '''
-    for sel in sels:
-        mylabel = sel
-        if showMean(bins, n_q):
-            mylabel = "%s (mean: %s)"%(sel, getMean(data[sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
-            if resps2 is not None: mylabel = mylabel.replace(sel, "2022")
-        elif resps2 is not None: mylabel = "2022"
-        axs.errorbar(range(len(bins)), data[sel]["bin_vals"], yerr=data[sel]["bin_errs"], label=mylabel, marker="o")
-
-        if resps2 is not None:
-            mylabel = mylabel.replace("2022", "2021")
-            if showMean(bins, n_q):
-                mylabel = "%s (mean: %s)"%(2021, getMean(data2[sel]["bin_vals"], nprofs=("How many faculty members" in questions[year][n_q])))
-            axs.errorbar(range(len(bins)), data2[sel]["bin_vals"], yerr=data2[sel]["bin_errs"], label=mylabel, marker="o")
-    '''
-
     plt.xticks(range(len(bins)), getBinLabels(bins))
     axs.margins(0.2)
     plt.ylim(bottom=0)
     if normalize: plt.ylabel("Fraction in Group")
     else: plt.ylabel("Number of Respondents")
-    #if n_q in [20, 21] + list(range(23,36)) + list(range(38,52)):
-    #    for i, sel in enumerate(sels):
-    #        plt.text(0.02, 0.9-0.1*i, "%s: %.2f"%(sel, getMean(data[year][sel]["bin_vals"])), transform=axs.transAxes)
     if len(questions[year][n_q].split())>30:
         plt.subplots_adjust(top=(1-len(questions[year][n_q].split())*0.005))
     if False: # maxxlabel > 15 and maxxlabel <= 30:
@@ -342,7 +311,6 @@ def plotData(resps_array, n_q, sels={"all":"True"}, app="", normalize=True, pie=
         axs.set_xticklabels(getBinLabels(bins), ha='right')
         plt.subplots_adjust(bottom=min(0.4,maxxlabel*0.03))
     axs.set_title(getSplitString(questions[year][n_q]), fontsize=10)
-    #if len(sels)>1 or resps2 is not None: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     if len(sels)>1 or len(resps_array)>1: plt.legend(loc='best', numpoints=1, framealpha=1) #, bbox_to_anchor=(0.5, 1.5))
     else:
         if showMean(bins, n_q): plt.text(0.6, 0.85, "mean: %s"%(getMean(datas[year][sel]["bin_vals"], ("How many faculty members" in questions[year][n_q]))), transform = axs.transAxes)
@@ -355,7 +323,6 @@ def showMean(bins, n_q):
         return True
     if "Disagree" in bins:
         return True
-    #if n_q in [16, 17, 18, 19, 20, 21] + list(range(23,36)) + list(range(38,52)): return True
     return False
 
 def getAllSelections(responses, n_q, simplified=True):
@@ -363,17 +330,14 @@ def getAllSelections(responses, n_q, simplified=True):
     n_qs = {year: n_q}
     if simplified and n_q in simplified_bins:
         for k in simplified_bins[n_q]:
-            #selections[k] = "vals[j] in simplified_bins[%d]['%s']"%(n_q, k)
             selections[k] = "resps.iloc[:, %d][j] in simplified_bins[%d]['%s']"%(n_q, n_q, k)
         return selections
 
     values = getBins(responses, n_qs)
     for v in values:
         if type(v)==np.int64: # Value is an int
-            #selections[v] = "vals[j] == %s"%(n_q, v)
             selections[v] = "resps.iloc[:, %d][j] == %s"%(n_q, v)
         else:
-            #selections[v] = "vals[j] == '%s'"%(n_q, v)
             selections[v] = "resps.iloc[:, %d][j] == '%s'"%(n_q, v)
     return selections
 
