@@ -34,6 +34,7 @@ output_dir = "plots/"+dataset+"/"
 import json
 f = open('selections.json')
 selections = json.load(f)
+#TODO: I didn't actually read the files from here, could do that to make things more streamlined
 
 ### HELPER FUNCTIONS ###
 
